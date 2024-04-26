@@ -52,6 +52,7 @@ int main() {
         curl_mime_name(part2, "discordhandle");
         curl_easy_setopt(curl, CURLOPT_MIMEPOST, mime);
         curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, 5000);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
         curl_easy_setopt(curl, CURLOPT_URL, "https://3ds.gruetzig.dev/submit");
         printf("Hehe set all the stuff\n");
         /* Perform the request, res will get the return code */
