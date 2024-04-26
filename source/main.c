@@ -1,81 +1,112 @@
 #include <curl/curl.h> //curl
 #include <3ds.h>       //libctru
 
-// stdlib stuff
-#include <stdlib.h>
 #include <stdio.h>
-#include <string.h>
-#include <malloc.h>
+#include "network.h"
+#include "ui.h"
 
-#define SOC_ALIGN 0x1000
-#define SOC_BUFFERSIZE 0x100000
-static u32 *SOC_buffer = NULL;
+DrawContext ctx;
+
+void enter(char* inout) {
+    SwkbdState swkbd;
+    swkbdInit(&swkbd, SWKBD_TYPE_NORMAL, 1, 50);
+    swkbdInputText(&swkbd, inout, 51);
+    return;
+}
 
 int main() {
     gfxInitDefault();
+    if (!initSocket()) {
+        goto fail;
+    }
+    int result;
+    result = initUI();
+    if (result) {
+        printf("initUI returned %d", result);
+        goto fail;
+    }
+    char discordtag[33] = "";
+    char address[52] = "";
+    initContext(&ctx);
+    initColors(&ctx);
+    int menustate = 0;
+    char finaltext[200];
+
+    while (aptMainLoop()) {
+        hidScanInput();
+        u32 kDown = hidKeysDown();
+
+        C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
+        C2D_TargetClear(ctx.top, ctx.clrBgDark);
+        C2D_SceneBegin(ctx.top);
+        drawText(SCREEN_WIDTH_TOP/2, 0, 0, 0.7, ctx.clrWhite, C2D_AlignCenter, "Nintendo Homebrew essential.exefs Submitter");
+        switch(menustate) {
+            case 0:
+                drawText(20, 40, 0, 0.5, ctx.clrWhite, 0, "Your Discord tag: %s", discordtag);
+                drawText(20, 70, 0, 0.5, ctx.clrWhite, 0, "Address entered: %s", address);
+                if (strlen(address) > 0 && strlen(discordtag) > 0) {
+                    drawText(SCREEN_WIDTH_TOP/2, SCREEN_HEIGHT*3/4, 0, 0.7, ctx.clrWhite, C2D_AlignCenter, "Press A to submit");
+                } else {
+                    drawText(SCREEN_WIDTH_TOP/2, SCREEN_HEIGHT*3/4, 0, 0.7, ctx.clrWhite, C2D_AlignCenter, "Press X to enter the server address\nPress Y to enter your Discord tag");
+                }
+                if (kDown & KEY_X) {
+                    enter(address);
+                }
+                if (kDown & KEY_Y) {
+                    enter(discordtag);
+                }
+                if (strlen(address) > 0 && strlen(discordtag) > 0 && kDown & KEY_A) {
+                    menustate++;
+                } 
+                break;
+            case 1:
+                drawText(SCREEN_WIDTH_TOP/2, SCREEN_HEIGHT*3/4, 0, 0.7, ctx.clrWhite, C2D_AlignCenter, "Submitting...");
+                break;
+            case 2: 
+                drawText(SCREEN_WIDTH_TOP/2, SCREEN_HEIGHT*3/4, 0, 0.7, ctx.clrWhite, C2D_AlignCenter, finaltext);
+                break;
+
+        }
+        C3D_FrameEnd(0);
+        switch(menustate) {
+            case 0:
+            case 2:
+                if (kDown & KEY_START)
+                    goto exit;
+                break;
+            case 1:
+                initcurl();
+                initform(); 
+                discordhandleentry(discordtag);
+                fileentry("sdmc:/gm9/out/essential.exefs");
+                CURLcode res = submittourl(address);
+                if(res != CURLE_OK) {
+                    sprintf(finaltext, "curl_easy_perform() failed: %s\n",
+                        curl_easy_strerror(res));
+                } else {
+                    sprintf(finaltext, "Information submitted.");
+                }
+                exiteverything();
+                menustate++;
+                break;
+
+
+        }
+        
+        
+       
+    }
+
+fail:
     consoleInit(GFX_TOP, GFX_LEFT);
-    Result ret;
-    SOC_buffer = (u32 *)memalign(SOC_ALIGN, SOC_BUFFERSIZE);
-    if (SOC_buffer == NULL) {
-        printf("memalign: failed to allocate\n");
-    }
-
-    // Now intialise soc:u service
-    if ((ret = socInit(SOC_buffer, SOC_BUFFERSIZE)) != 0) {
-        printf("socInit: 0x%08X\n", (unsigned int)ret);
-    }
-
-    // from now on socket is initialized and we happy use curl
-
-    CURL *curl;
-    CURLcode res;
-    curl_mime *mime;
-    curl_mimepart *part1;
-    curl_mimepart *part2;
-
-    /* In windows, this will init the winsock stuff */
-    curl_global_init(CURL_GLOBAL_ALL);
-
-    /* get a curl handle */
-    curl = curl_easy_init();
-    if (curl) {
-        printf("curl did the init stuff\n");
-        /* First set the URL that is about to receive our POST. This URL can
-           just as well be an https:// URL if that is what should receive the
-           data. */
-        mime = curl_mime_init(curl);
-        part1 = curl_mime_addpart(mime);
-        part2 = curl_mime_addpart(mime);
-        curl_mime_filedata(part1, "sdmc:/gm9/out/essential.exefs");
-        curl_mime_name(part1, "file");
-        curl_mime_data(part2, "gruetzig", CURL_ZERO_TERMINATED);
-        curl_mime_name(part2, "discordhandle");
-        curl_easy_setopt(curl, CURLOPT_MIMEPOST, mime);
-        curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, 5000);
-        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
-        curl_easy_setopt(curl, CURLOPT_URL, "https://3ds.gruetzig.dev/submit");
-        printf("Hehe set all the stuff\n");
-        /* Perform the request, res will get the return code */
-        res = curl_easy_perform(curl);
-
-        /* Check for errors */
-        if (res != CURLE_OK)
-            printf("curl_easy_perform() failed: %s\n",
-                   curl_easy_strerror(res));
-        printf("sickomatico it worked\n");
-        /* always cleanup */
-        curl_easy_cleanup(curl);
-        curl_mime_free(mime);
-    }
-    curl_global_cleanup();
-    printf("Done!!\n");
     while (aptMainLoop()) {
         hidScanInput();
         u32 kDown = hidKeysDown();
         if (kDown & KEY_START)
             break;
     }
-
+exit:
+    exitUI();
     socExit();
     gfxExit();
 }
