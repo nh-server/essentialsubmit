@@ -31,8 +31,8 @@ include $(DEVKITARM)/3ds_rules
 #     - icon.png
 #     - <libctru folder>/default_icon.png
 #---------------------------------------------------------------------------------
-APP_TITLE       := curl-example
-APP_DESCRIPTION := curl ftw
+APP_TITLE       := essentialsubmit
+APP_DESCRIPTION := Nintendo Homebrew essential.exefs Submitter
 APP_AUTHOR      := Gruetzig
 TARGET		:=	$(notdir $(CURDIR))
 BUILD		:=	build
@@ -40,8 +40,8 @@ SOURCES		:=	source
 DATA		:=	data
 INCLUDES	:=	include
 GRAPHICS	:=	gfx
-#ROMFS		:=	romfs
-#GFXBUILD	:=	$(ROMFS)/gfx
+ROMFS		:=	romfs
+GFXBUILD	:=	$(ROMFS)/gfx
 
 #---------------------------------------------------------------------------------
 # options for code generation
@@ -52,8 +52,12 @@ CFLAGS	:=	-g -Wall -O2 -mword-relocations \
 			-ffunction-sections \
 			$(ARCH)
 
-CFLAGS	+=	$(INCLUDE) -D__3DS__
+CFLAGS	+=	$(INCLUDE) -D__3DS__ 
 
+
+ifneq ($(strip $(DEVKITARM)),) 
+CFLAGS	+= 	-DSERVER_ADDRESS=\"$(SERVER_ADDRESS)\"
+endif
 CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -std=gnu++11
 
 ASFLAGS	:=	-g $(ARCH)
