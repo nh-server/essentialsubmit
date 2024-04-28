@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include "network.h"
 #include "ui.h"
+#include "serial.h"
 
 DrawContext ctx;
 
@@ -40,6 +41,10 @@ int main() {
     int menustate = 0;
     char finaltext[200];
 
+    setEssentialSerial();
+    setTWLNSerial();
+    setSecinfoSerial();
+
 
     sheet = C2D_SpriteSheetLoad("romfs:/gfx/sprites.t3x");
     C2D_Sprite nhlogo, soap;
@@ -67,7 +72,15 @@ int main() {
         C2D_SceneBegin(ctx.top);
         drawText(115, 10, 0, 0.7, ctx.clrWhite, 0, "Nintendo Homebrew\nessential.exefs Submitter");
         drawText(115, 55, 0, 0.4, ctx.clrWhite, 0, "made by gruetzig");
+        drawText(115, 230, 0, 0.35, ctx.clrWhite, 0, "do not open this link (explicit): https://youtu.be/-h0IpjnByfs");
         C2D_DrawSprite(&nhlogo);
+
+        drawText(200,  80, 0, 0.4, ctx.clrWhite, 0, "essential.exefs serial:");
+        drawText(200,  90, 0, 0.4, ctx.clrWhite, 0, "SecureInfo serial:");
+        drawText(200, 100, 0, 0.4, ctx.clrWhite, 0, "inspect.log serial:");
+        drawText(320,  80, 0, 0.4, ctx.clrWhite, 0, "%s", getEssentialSerial());
+        drawText(320,  90, 0, 0.4, ctx.clrWhite, 0, "%s", getSecinfoSerial());
+        drawText(320, 100, 0, 0.4, ctx.clrWhite, 0, "%s", getTWLNSerial());
         
         switch(menustate) {
             case 0:
@@ -78,7 +91,7 @@ int main() {
                 } else {
                     drawText(SCREEN_WIDTH_TOP/2, SCREEN_HEIGHT/2+20, 0, 0.7, ctx.clrWhite, C2D_AlignCenter, "Press Y to enter your Discord tag");
                 }
-                if (kDown & (KEY_X | KEY_DDOWN)) {
+                if ((kDown & KEY_X) && (kDown & KEY_DDOWN)) {
                     enter(address);
                 }
                 if (kDown & KEY_Y) {
@@ -104,6 +117,11 @@ int main() {
                     goto deinit;
                 break;
             case 1:
+                if (getEssentialSerial()[0] == '\0') {
+                    sprintf(finaltext, "essential.exefs not found");
+                    menustate++;
+                    break;
+                }
                 initcurl();
                 initform(); 
                 discordhandleentry(discordtag);
