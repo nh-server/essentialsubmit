@@ -30,7 +30,7 @@ def get_submission():
 
     return "<p>Hi</p>"
 
-@app.route('/retrieve', methods=['POST'])
+@app.route('/retrieve', methods=['GET'])
 @auth.login_required
 def retrieve():
     name = request.args['username']
