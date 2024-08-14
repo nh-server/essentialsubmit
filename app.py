@@ -38,7 +38,7 @@ def retrieve():
     with open(f"essential_{name}.exefs", "rb") as f:
         essential = f.read()
     make_response(essential)
-    response = make_response(movable)
+    response = make_response(essential)
     response.headers.set('Content-Type', 'application/octet-stream')
     response.headers.set('Content-Disposition', 'attachment', filename=f'essential_{name}.exefs')
     return response
