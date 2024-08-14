@@ -34,8 +34,8 @@ def get_submission():
 @auth.login_required
 def retrieve():
     name = request.args['username']
-    print(f"{username} is being retrieved")
-    with open(f"essential_{username}.exefs", "rb") as f:
+    print(f"{name} is being retrieved")
+    with open(f"essential_{name}.exefs", "rb") as f:
         essential = f.read()
     make_response(essential)
     response = make_response(movable)
