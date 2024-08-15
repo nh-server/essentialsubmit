@@ -42,6 +42,10 @@ def get_submission():
 
     return "<p>Hi</p>"
 
+@app.route('/')
+def index():
+    return render_template('index.html')
+
 @app.route('/admin')
 @auth.login_required
 def admin():
