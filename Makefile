@@ -61,7 +61,7 @@ CFLAGS	:=	-g -Wall -O2 -mword-relocations \
 CFLAGS	+=	$(INCLUDE) -D__3DS__ 
 
 
-ifneq ($(strip $(DEVKITARM)),) 
+ifneq ($(strip $(SERVER_ADDRESS)),) 
 CFLAGS	+= 	-DSERVER_ADDRESS=\"$(SERVER_ADDRESS)\"
 endif
 CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -std=gnu++11

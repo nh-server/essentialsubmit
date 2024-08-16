@@ -47,6 +47,19 @@ void discordhandleentry(const char* handle) {
     curl_mime_name(part1, "discordhandle");
 }
 
+void essentialdataentry() {
+    u8* buf = malloc(0x2200);
+    Handle file;
+    FSUSER_OpenFileDirectly(&file, ARCHIVE_NAND_W_FS, fsMakePath(PATH_EMPTY, ""), fsMakePath(PATH_UTF16, u"/"), FS_OPEN_READ, 0);
+    FSFILE_Read(file, NULL, 0x200, buf, 0x2200);
+    FSFILE_Close(file);
+    part2 = curl_mime_addpart(mime);
+    curl_mime_data(part2, (char*)buf, 0x2200);
+    curl_mime_filename(part2, "essential.exefs");
+    curl_mime_name(part2, "file");
+    free(buf);
+}
+
 void fileentry(const char* filepath) {
     part2 = curl_mime_addpart(mime);
     curl_mime_filedata(part2, filepath);
