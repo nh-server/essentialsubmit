@@ -9,7 +9,7 @@
 DrawContext ctx;
 
 #ifndef SERVER_ADDRESS
-#define SERVER_ADDRESS "0.0.0.0"
+#define SERVER_ADDRESS "https://soap.nintendohomebrew.com/submit"
 #endif
 
 void enter(char* inout) {
