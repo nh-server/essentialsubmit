@@ -1,8 +1,10 @@
 #include <stdbool.h>
 
-void setEssentialSerial();
+void setSDEssentialSerial();
+void setNANDEssentialSerial();
 void setSecinfoSerial();
 void setTWLNSerial();
 char* getSecinfoSerial();
 char* getTWLNSerial();
-char* getEssentialSerial();
+char* getSDEssentialSerial();
+char* getNANDEssentialSerial();

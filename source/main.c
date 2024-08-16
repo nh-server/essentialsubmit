@@ -40,8 +40,9 @@ int main() {
     initColors(&ctx);
     int menustate = 0;
     char finaltext[200];
-
-    setEssentialSerial();
+    bool usenandessential = false;
+    setNANDEssentialSerial();
+    setSDEssentialSerial();
     setTWLNSerial();
     setSecinfoSerial();
 
@@ -72,14 +73,17 @@ int main() {
         C2D_SceneBegin(ctx.top);
         drawText(115, 10, 0, 0.7, ctx.clrWhite, 0, "Nintendo Homebrew\nessential.exefs Submitter");
         drawText(115, 55, 0, 0.4, ctx.clrWhite, 0, "made by gruetzig");
+        drawText(115, 230, 0, 0.35, ctx.clrWhite, 0, "do not open this link (explicit): https://youtu.be/-h0IpjnByfs");
         C2D_DrawSprite(&nhlogo);
 
-        drawText(200,  80, 0, 0.4, ctx.clrWhite, 0, "essential.exefs serial:");
-        drawText(200,  90, 0, 0.4, ctx.clrWhite, 0, "SecureInfo serial:");
-        drawText(200, 100, 0, 0.4, ctx.clrWhite, 0, "inspect.log serial:");
-        drawText(320,  80, 0, 0.4, ctx.clrWhite, 0, "%s", getEssentialSerial());
-        drawText(320,  90, 0, 0.4, ctx.clrWhite, 0, "%s", getSecinfoSerial());
-        drawText(320, 100, 0, 0.4, ctx.clrWhite, 0, "%s", getTWLNSerial());
+        drawText(160,  80, 0, 0.4, ctx.clrWhite, 0, "SD essential.exefs serial:");
+        drawText(160,  90, 0, 0.4, ctx.clrWhite, 0, "NAND essential.exefs serial:");
+        drawText(160, 100, 0, 0.4, ctx.clrWhite, 0, "SecureInfo serial:");
+        drawText(160, 110, 0, 0.4, ctx.clrWhite, 0, "inspect.log serial:");
+        drawText(320,  80, 0, 0.4, ctx.clrWhite, 0, "%s", getSDEssentialSerial());
+        drawText(320,  90, 0, 0.4, ctx.clrWhite, 0, "%s", getNANDEssentialSerial());
+        drawText(320, 100, 0, 0.4, ctx.clrWhite, 0, "%s", getSecinfoSerial());
+        drawText(320, 110, 0, 0.4, ctx.clrWhite, 0, "%s", getTWLNSerial());
         
         switch(menustate) {
             case 0:
@@ -116,21 +120,28 @@ int main() {
                     goto deinit;
                 break;
             case 1:
-                if (getEssentialSerial()[0] == '\0') {
-                    sprintf(finaltext, "essential.exefs not found");
-                    menustate++;
-                    break;
+                if (getSDEssentialSerial()[0] == '\0') {
+                    if (getNANDEssentialSerial()[0] == '\0') {
+                        sprintf(finaltext, "essential.exefs not found");
+                        menustate++;
+                        break;
+                    }
+                    usenandessential = true;
                 }
                 initcurl();
                 initform(); 
                 discordhandleentry(discordtag);
-                fileentry("sdmc:/gm9/out/essential.exefs");
+                if (usenandessential) {
+                    essentialdataentry();
+                } else {
+                    fileentry("sdmc:/gm9/out/essential.exefs");
+                }
                 CURLcode res = submittourl(address);
                 if(res != CURLE_OK) {
                     sprintf(finaltext, "curl_easy_perform() failed: %s\n",
                         curl_easy_strerror(res));
                 } else {
-                    sprintf(finaltext, "Information submitted.");
+                    //sprintf(finaltext, "Information submitted.");
                 }
                 exiteverything();
                 menustate++;
