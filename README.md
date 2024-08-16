@@ -14,3 +14,7 @@ python3 -m venv .venv \
 . .venv/bin/activate \
 pip install flask gunicorn flask_httpauth \
 gunicorn -w 1 app:app
+
+# credit
+
+gruetzig made this, eip forked it and is providing access to it via nintendohomebrew resources
