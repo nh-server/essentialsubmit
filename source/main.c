@@ -72,7 +72,6 @@ int main() {
         C2D_SceneBegin(ctx.top);
         drawText(115, 10, 0, 0.7, ctx.clrWhite, 0, "Nintendo Homebrew\nessential.exefs Submitter");
         drawText(115, 55, 0, 0.4, ctx.clrWhite, 0, "made by gruetzig");
-        drawText(115, 230, 0, 0.35, ctx.clrWhite, 0, "do not open this link (explicit): https://youtu.be/-h0IpjnByfs");
         C2D_DrawSprite(&nhlogo);
 
         drawText(200,  80, 0, 0.4, ctx.clrWhite, 0, "essential.exefs serial:");
