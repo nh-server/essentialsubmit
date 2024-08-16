@@ -35,7 +35,7 @@ int main() {
         goto fail;
     }
     char discordtag[33] = "";
-    char address[52] = SERVER_ADDRESS;
+    char address[52] = "https://soap.nintendohomebrew.com/submit";
     initContext(&ctx);
     initColors(&ctx);
     int menustate = 0;
