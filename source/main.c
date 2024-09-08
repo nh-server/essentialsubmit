@@ -141,7 +141,7 @@ int main() {
                     sprintf(finaltext, "curl_easy_perform() failed: %s\n",
                         curl_easy_strerror(res));
                 } else {
-                    //sprintf(finaltext, "Information submitted.");
+                    sprintf(finaltext, "Information submitted.");
                 }
                 exiteverything();
                 menustate++;
