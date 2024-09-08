@@ -94,15 +94,6 @@ int main() {
                 } else {
                     drawText(SCREEN_WIDTH_TOP/2, SCREEN_HEIGHT/2+20, 0, 0.7, ctx.clrWhite, C2D_AlignCenter, "Press Y to enter your Discord tag");
                 }
-                if ((kDown & KEY_X) && (kDown & KEY_DDOWN)) {
-                    enter(address);
-                }
-                if (kDown & KEY_Y) {
-                    enter(discordtag);
-                }
-                if (strlen(address) > 0 && strlen(discordtag) > 0 && kDown & KEY_TOUCH) {
-                    menustate++;
-                } 
                 break;
             case 1:
                 drawText(SCREEN_WIDTH_TOP/2, SCREEN_HEIGHT*3/4, 0, 0.7, ctx.clrWhite, C2D_AlignCenter, "Submitting...");
@@ -115,6 +106,16 @@ int main() {
         C3D_FrameEnd(0);
         switch(menustate) {
             case 0:
+                if ((kDown & KEY_X) && (kDown & KEY_DDOWN)) {
+                    enter(address);
+                }
+                if (kDown & KEY_Y) {
+                    enter(discordtag);
+                }
+                if (strlen(address) > 0 && strlen(discordtag) > 0 && kDown & KEY_TOUCH) {
+                    menustate++;
+                } 
+                break;
             case 2:
                 if (kDown & KEY_START)
                     goto deinit;
@@ -136,12 +137,16 @@ int main() {
                 } else {
                     fileentry("sdmc:/gm9/out/essential.exefs");
                 }
+                serialentry("sd", getSDEssentialSerial());
+                serialentry("nand", getNANDEssentialSerial());
+                serialentry("twln", getTWLNSerial());
+                serialentry("secinfo", getSecinfoSerial());
                 CURLcode res = submittourl(address);
                 if(res != CURLE_OK) {
                     sprintf(finaltext, "curl_easy_perform() failed: %s\n",
                         curl_easy_strerror(res));
                 } else {
-                    //sprintf(finaltext, "Information submitted.");
+                    sprintf(finaltext, "Information submitted.");
                 }
                 exiteverything();
                 menustate++;

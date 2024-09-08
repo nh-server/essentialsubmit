@@ -15,6 +15,7 @@ curl_mime *mime;
 curl_mimepart *part1;
 curl_mimepart *part2;
 
+
 bool initSocket() {
     Result ret;
     SOC_buffer = (u32 *)memalign(SOC_ALIGN, SOC_BUFFERSIZE);
@@ -64,6 +65,12 @@ void fileentry(const char* filepath) {
     part2 = curl_mime_addpart(mime);
     curl_mime_filedata(part2, filepath);
     curl_mime_name(part2, "file");
+}
+
+void serialentry(const char* name, char* serial) {
+    curl_mimepart *serialpart = curl_mime_addpart(mime);
+    curl_mime_data(serialpart, serial, CURL_ZERO_TERMINATED);
+    curl_mime_name(serialpart, name);
 }
 
 CURLcode submittourl(const char* url) {
