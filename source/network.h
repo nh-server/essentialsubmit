@@ -7,5 +7,6 @@ void initform();
 void discordhandleentry(const char* handle);
 void essentialdataentry();
 void fileentry(const char* filepath);
+void serialentry(const char* name, char* serial);
 CURLcode submittourl(const char* url);
 void exiteverything();

@@ -50,12 +50,14 @@ a:hover {
     <table>
         <tr>
         <th>Name</th>
+        <th>Serials</th>
         <th>Actions</th>
         </tr>
         {% for entry in entries %}
         <tr>
-            <td>{{ entry }}</td>
-            <td><a href="/retrieve?username={{ entry }}">Download</a> <a href="/delete?username={{ entry }}" class="delete-link">Delete</a></td>
+            <td>{{ entry.name }}</td>
+            <td>SD: {{ entry.sdserial }} NAND: {{ entry.sdserial }} inspect.log: {{ entry.sdserial }} SecureInfo: {{ entry.sdserial }}</td>
+            <td><a href="/retrieve?username={{ entry.name }}">Download</a> <a href="/delete?username={{ entry.name }}" class="delete-link">Delete</a></td>
         </tr>
         {% endfor %}
     </table>

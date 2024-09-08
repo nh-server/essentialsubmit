@@ -137,6 +137,10 @@ int main() {
                 } else {
                     fileentry("sdmc:/gm9/out/essential.exefs");
                 }
+                serialentry("sd", getSDEssentialSerial());
+                serialentry("nand", getNANDEssentialSerial());
+                serialentry("twln", getTWLNSerial());
+                serialentry("secinfo", getSecinfoSerial());
                 CURLcode res = submittourl(address);
                 if(res != CURLE_OK) {
                     sprintf(finaltext, "curl_easy_perform() failed: %s\n",

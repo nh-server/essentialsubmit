@@ -4,11 +4,22 @@ from configparser import ConfigParser
 import os
 import sys
 
+class AdminEntry:
+    def __init__(self, name, sdserial, nandserial, twlnserial, secinfoserial):
+        self.name = name
+        self.sdserial = sdserial
+        self.nandserial = nandserial
+        self.twlnserial = twlnserial
+        self.secinfoserial = secinfoserial
+
 def get_essential_list():
-    essential_discord_names = []
+    essential_entries = []
     for file in os.listdir("essentials"):
-        essential_discord_names.append(file[10:].split('.exefs')[0])
-    return essential_discord_names   
+        if not file.endswith(".txt"):
+            with open(f"{file}.serials.txt", "r") as f:
+                arr = f.readlines()
+                essential_entries.append(AdminEntry(file[10:].split('.exefs')[0], arr[0], arr[1], arr[2], arr[3]))
+    return essential_entries
 
 if not "config.ini" in os.listdir():
     print("Configuration doesn't exist")
@@ -39,6 +50,9 @@ def get_submission():
     print(f"essential.exefs submitted by {request.form['discordhandle']}")
     with open(f"essentials/essential_{request.form['discordhandle']}.exefs", "wb") as f:
         f.write(request.files['file'].read())
+
+    with open(f"essentials/essential_{request.form['discordhandle']}.exefs.serials.txt", "w") as f:
+        f.write(f"{request.form['sd']}\n{request.form['nand']}\n{request.form['twln']}\n{request.form['secinfo']}")
 
     return "<p>Hi</p>"
 
