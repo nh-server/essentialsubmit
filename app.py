@@ -79,4 +79,5 @@ def delete():
     name = request.args['username']
     print(f"{name} deleted by {request.remote_addr}")
     os.remove(f"essentials/essential_{name}.exefs")
+    os.remove(f"essentials/essential_{name}.exefs.serials.txt")
     return "Deleted successfully. <a href=\"/admin\">Return to Admin Panel</a>"
