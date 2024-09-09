@@ -16,11 +16,11 @@ def get_essential_list():
     essential_entries = []
     for file in os.listdir("essentials"):
         if not file.endswith(".txt"):
-            if (os.path.exists(f"essentials/{file}.serials.txt")):
+            try:
                 with open(f"essentials/{file}.serials.txt", "r") as f:
                     arr = f.readlines()
                     essential_entries.append(AdminEntry(file[10:].split('.exefs')[0], arr[0], arr[1], arr[2], arr[3]))
-            else:
+            except FileNotFoundError:
                 essential_entries.append(AdminEntry(file[10:].split('.exefs')[0], "", "", "", ""))
     return essential_entries
 
