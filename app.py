@@ -16,9 +16,12 @@ def get_essential_list():
     essential_entries = []
     for file in os.listdir("essentials"):
         if not file.endswith(".txt"):
-            with open(f"essentials/{file}.serials.txt", "r") as f:
-                arr = f.readlines()
-                essential_entries.append(AdminEntry(file[10:].split('.exefs')[0], arr[0], arr[1], arr[2], arr[3]))
+            if (os.path.exists(f"essentials/{file}.serials.txt")):
+                with open(f"essentials/{file}.serials.txt", "r") as f:
+                    arr = f.readlines()
+                    essential_entries.append(AdminEntry(file[10:].split('.exefs')[0], arr[0], arr[1], arr[2], arr[3]))
+            else:
+                essential_entries.append(AdminEntry(file[10:].split('.exefs')[0], "", "", "", ""))
     return essential_entries
 
 if not "config.ini" in os.listdir():
@@ -79,5 +82,8 @@ def delete():
     name = request.args['username']
     print(f"{name} deleted by {request.remote_addr}")
     os.remove(f"essentials/essential_{name}.exefs")
-    os.remove(f"essentials/essential_{name}.exefs.serials.txt")
+    try: 
+        os.remove(f"essentials/essential_{name}.exefs.serials.txt")
+    except FileNotFoundError:
+        pass
     return "Deleted successfully. <a href=\"/admin\">Return to Admin Panel</a>"
