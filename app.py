@@ -3,14 +3,16 @@ from flask_httpauth import HTTPBasicAuth
 from configparser import ConfigParser
 import os
 import sys
+import time
 
 class AdminEntry:
-    def __init__(self, name, sdserial, nandserial, twlnserial, secinfoserial):
+    def __init__(self, name, sdserial, nandserial, twlnserial, secinfoserial, date):
         self.name = name
         self.sdserial = sdserial
         self.nandserial = nandserial
         self.twlnserial = twlnserial
         self.secinfoserial = secinfoserial
+        self.date = date
 
 def get_essential_list():
     essential_entries = []
@@ -19,9 +21,9 @@ def get_essential_list():
             try:
                 with open(f"essentials/{file}.serials.txt", "r") as f:
                     arr = f.readlines()
-                    essential_entries.append(AdminEntry(file[10:].split('.exefs')[0], arr[0], arr[1], arr[2], arr[3]))
+                    essential_entries.append(AdminEntry(file[10:].split('.exefs')[0], arr[0], arr[1], arr[2], arr[3], arr[4]))
             except FileNotFoundError:
-                essential_entries.append(AdminEntry(file[10:].split('.exefs')[0], "", "", "", ""))
+                essential_entries.append(AdminEntry(file[10:].split('.exefs')[0], "", "", "", "", ""))
     return essential_entries
 
 if not "config.ini" in os.listdir():
@@ -55,12 +57,13 @@ def verify_password(username, password):
 
 @app.route('/submit', methods=['POST'])
 def get_submission():
+    curtime = int(time.time())
     print(f"essential.exefs submitted by {request.form['discordhandle']}")
     with open(f"essentials/essential_{request.form['discordhandle']}.exefs", "wb") as f:
         f.write(request.files['file'].read())
 
     with open(f"essentials/essential_{request.form['discordhandle']}.exefs.serials.txt", "w") as f:
-        f.write(f"{request.form['sd']}\n{request.form['nand']}\n{request.form['twln']}\n{request.form['secinfo']}")
+        f.write(f"{request.form['sd']}\n{request.form['nand']}\n{request.form['twln']}\n{request.form['secinfo']}\n{curtime}")
 
     return "<p>Hi</p>"
 
