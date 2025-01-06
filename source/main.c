@@ -12,11 +12,11 @@ DrawContext ctx;
 #define SERVER_ADDRESS "0.0.0.0"
 #endif
 
-void enter(char* inout) {
+void enter(char* inout, size_t len) {
     SwkbdState swkbd;
-    swkbdInit(&swkbd, SWKBD_TYPE_NORMAL, 1, 50);
+    swkbdInit(&swkbd, SWKBD_TYPE_NORMAL, 1, len);
     swkbdSetInitialText(&swkbd, inout);
-    swkbdInputText(&swkbd, inout, 51);
+    swkbdInputText(&swkbd, inout, len+1);
     return;
 }
 
@@ -107,10 +107,10 @@ int main() {
         switch(menustate) {
             case 0:
                 if ((kDown & KEY_X) && (kDown & KEY_DDOWN)) {
-                    enter(address);
+                    enter(address, 51);
                 }
                 if (kDown & KEY_Y) {
-                    enter(discordtag);
+                    enter(discordtag, 32);
                 }
                 if (strlen(address) > 0 && strlen(discordtag) > 0 && kDown & KEY_TOUCH) {
                     menustate++;
