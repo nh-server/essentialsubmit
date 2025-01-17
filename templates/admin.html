@@ -39,7 +39,8 @@ a {
     border-radius: 4px;
     background-color: #f1f1f1;
     transition: background-color 0.3s ease;
-    margin-right: 5px;
+    margin: 5px;
+    display: inline-block;
 }
 
 a:hover {
@@ -64,7 +65,7 @@ a:hover {
     </table>
 </body>
 <script>
-    document.querySelectorAll(".date-timestamp").forEach(e => e.textContent = Date(Number(e.textContent)))
+    document.querySelectorAll(".date-timestamp").forEach(e => e.textContent = new Date(parseInt(e.textContent)*1000));
     // Select all elements with the class 'delete-link'
     const deleteLinks = document.querySelectorAll('.delete-link');
 
