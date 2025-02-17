@@ -1,4 +1,4 @@
-from flask import Flask, request, make_response, render_template, send_from_directory
+from flask import Flask, request, make_response, render_template, send_from_directory, url_for
 from flask_httpauth import HTTPBasicAuth
 from configparser import ConfigParser
 import os
@@ -8,6 +8,8 @@ import time
 class AdminEntry:
     def __init__(self, name, sdserial, nandserial, twlnserial, secinfoserial, date):
         self.name = name
+        self.retrieveurl = url_for('retrieve', username=name)
+        self.deleteurl = url_for('delete', username=name)
         self.sdserial = sdserial
         self.nandserial = nandserial
         self.twlnserial = twlnserial
